@@ -30,9 +30,9 @@ MY_PATH=`( cd "$MY_PATH" && pwd )`
 echo "Script path is $MY_PATH"
 echo "Current working directory is: $PWD"
 
-
 KUBECTL_VER=`(kubectl version --client -o json | jq .clientVersion.gitVersion -r)`
 KUBE_SERVER=`(kubectl version -o json --context $CONTEXT | jq .serverVersion.gitVersion -r)`
+JQ_VERSION=`(jq --version)`
 
 echo "Invoked the script with params:"
 cat << EOF | column -t -s:
@@ -44,7 +44,13 @@ Ingress Controller Name:$INGRESS_CONTROLLER_NAME
 Kube Context:$KUBECTL_CONTEXT
 EOF
 
-
+echo "Invoked the script with params:"
+cat << EOF | column -t -s:
+Component:Version
+KubeCtl Version:$KUBECTL_VER
+Kubernetes Version:$KUBE_SERVER
+JQ Version:$JQ_VERSION
+EOF
 
 
 # get ingress controllers current configuration in JSON format.
@@ -62,14 +68,15 @@ kubectl diff -f ingress-conf-ammended.json --context  $KUBECTL_CONTEXT
 
 if [ $? -eq 0 ]; then
   echo "INFO: No changes to the ingress controller were found."
-elif [ $? -gt 1 ]; then
-  echo "ERROR: Failed to perform the Kube Diff on the Ingress Controller."
-else
+elif [ $? -eq 1 ]; then
   echo "INFO: Updating ingress controller with new rules."
   #apply ingress config
   kubectl apply -f ingress-conf-ammended.json --context $KUBECTL_CONTEXT
+else
+  echo "ERROR: Failed to perform the Kube Diff on the Ingress Controller."
 fi
 
 #remove temporary files
 rm {ingress-conf-pre.json,ingress-conf-ammended.json,ingress-conf-cleaned.json}
 
+echo "Exited script: $ME"
