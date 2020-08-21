@@ -31,7 +31,7 @@ echo "Script path is $MY_PATH"
 echo "Current working directory is: $PWD"
 
 KUBECTL_VER=`(kubectl version --client -o json | jq .clientVersion.gitVersion -r)`
-KUBE_SERVER=`(kubectl version -o json --context $CONTEXT | jq .serverVersion.gitVersion -r)`
+KUBE_SERVER=`(kubectl version -o json --context $KUBECTL_CONTEXT | jq .serverVersion.gitVersion -r)`
 JQ_VERSION=`(jq --version)`
 
 echo "Invoked the script with params:"
