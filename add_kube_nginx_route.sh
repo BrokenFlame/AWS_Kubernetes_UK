@@ -25,6 +25,9 @@ EXAMPLE
 EXIT STATUS
 Incomplete, do not use.
 
+REQUIREMENTS
+jq v1.5 or jq v1.6 must be installed and accessible on the PATH. Later version may work, but it has not been tested.
+kubectl v1.16 - v1.18 must be installed and accessible on the PATH.  Later version may work, but it has not been tested.
 "
 echo "$__usage"
 }
