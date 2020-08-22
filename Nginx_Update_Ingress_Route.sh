@@ -1,26 +1,100 @@
 #!/bin/bash
 
-MY_SERVICE_BACKEND=$1
-MY_SERVICE_PORT=$2
-MY_SERVICE_PATH=$3
-HOST_DOMAIN=$4
+function show_help() {
+__usage="
+NAME
+  add_kube_nginx_route -- Adds a route to an existing Nginx ingress controller.
 
-INGRESS_CONTROLLER_NAME=$5
-KUBECTL_CONTEXT=$6
+SYNOPSIS
+  add_kube_ngnix_route [ -b backend ]  [ -c context]  [ -d domain ] [ -i ingressname]  [ -p portnumber ] [ -u url ] 
+
+DESCRIPTION
+
+-b    --backend               The name of the backend service to associate the route with.
+-c    --kube-context          The Kubectl context to use to connect to the Kubernetes API Server. 
+-d    --domain                The domain name under which to configure the route, i.e. www.mydomain.com
+-i    --ingress-controller    The name of the Nginix ingress controller to configure.
+-p    --backend-port          The port number if the backend service, the default is 8080.
+-u    --url_path              The url of the route to be configured, the default is /
+
+-h    --help                  This help message.
+
+EXAMPLE
+  add_kube_nginx_route -b backend_service -c kubectl_context -d www.mydomain.com -i ingress_name -p backend_service_port -u /accounts/customers
+
+EXIT STATUS
+Incomplete, do not use.
+
+"
+echo "$__usage"
+}
 
 
-#######################################################################
-###########            Example Values                      ############
-#######################################################################
-### MY_SERVICE_BACKEND=kubernetes service name                      ###
-### MY_SERVICE_PORT=8080                                            ###
-### MY_SERVICE_PATH=/accounts                                       ###
-### HOST_DOMAIN=www.microsoft.com                                   ###
-###                                                                 ###
-### INGRESS_CONTROLLER_NAME=dev-ingress-xfnw8a0                     ###
-### KUBECTL_CONTEXT=kube-dev-env-1                                  ###
-#######################################################################
+while [[ $# -gt 0 ]]
+do
+    key="${1}"
+    case ${key} in
+    -b|--backend)
+        MY_SERVICE_BACKEND="${2}"
+        shift # past argument
+        shift # past value
+        ;;
+    -p|--backend-port)
+         MY_SERVICE_PORT="${2:-8080}"
+        shift # past argument
+        shift # past value
+        ;;
+    -d|--domain)
+        HOST_DOMAIN="${2}"
+        shift # past argument
+        shift # past value
+        ;;
+    -u|--url_path)
+        MY_SERVICE_PATH="${2:-/}"
+        shift # past argument
+        shift # past value
+        ;;
+    -i|--ingress-controller)
+        INGRESS_CONTROLLER_NAME="${2}"
+        shift # past argument
+        shift # past value
+        ;;
+    -c|--kube-context)
+        KUBECTL_CONTEXT="${2}"
+        shift # past argument
+        shift # past value
+        ;;
+    -h|--help)
+        show_help
+        shift # past argument
+        ;;
+    *)    # unknown option
+        shift # past argument
+        ;;
+    esac
+    shift
+done
 
+# Check required parameters are not null.
+if [ -z $KUBECTL_CONTEXT ]; then
+  echo "Kubectl Context cannot be null, please provide a context."
+  exit 1
+fi
+
+if [ -z $INGRESS_CONTROLLER_NAME ]; then
+  echo "Kubernetes ingress name cannot be null, please provide a ingress name."
+  exit 1
+fi
+
+if [ -z $HOST_DOMAIN ]; then
+  echo "Domain name cannot be null, please provide a domain name for the ingress controller context."
+  exit 1
+fi
+
+if [ -z $MY_SERVICE_BACKEND ]; then
+  echo "Backend service name cannot be null, please provide a service to use for the backend."
+  exit 1
+fi
 
 #Additional diagnostic information for troubleshooting purposes.
 ME=`basename "$0"`
