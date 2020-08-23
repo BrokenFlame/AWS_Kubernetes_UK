@@ -1,5 +1,8 @@
 #!/bin/bash
 
+which jq
+if [ $? -gt 0 ]; then echo "jq version 1.5 or higher is required to be installed and avilable on the PATH."; exit 0; fi
+
 function show_help() {
 local __usage='
 NAME
