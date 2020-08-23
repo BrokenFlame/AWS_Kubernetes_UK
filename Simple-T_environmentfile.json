@@ -1,0 +1,18 @@
+    {
+        "environments": [
+            {
+                "name": "dev",
+                "clusterName": "myDevCluster",
+                "clusterResourceGroup": "myDevResourceGroup",
+                "ingressName": "devIngressName",
+                "domainName": "dev.mydomain.com"
+            },
+            {
+                "name": "qa",
+                "clusterName": "myQaCluster",
+                "clusterResourceGroup": "myQaResourceGroup",
+                "ingressName":"qaIngressName",
+                "domainName": "qa.mydomain.com"
+            }
+        ]
+    }
