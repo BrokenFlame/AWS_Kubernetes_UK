@@ -69,10 +69,12 @@ do
         ;;
     -h|--help)
         show_help
+        exit 0
         shift # past argument
         ;;
     *)    # unknown option
         shift # past argument
+        exit 1
         ;;
     esac
     shift
